@@ -87,7 +87,10 @@ struct StoryView: View{
             HStack{
                 ForEach(self.testdata, id: \.self) { i in
                     NavigationLink(destination:
-                        Text(i)
+                        VStack{
+                            Text(i)
+                            BackView()
+                            }.navigationBarBackButtonHidden(true)
                     ){
                         ZStack{
                             Image(systemName: "circle")
@@ -95,10 +98,11 @@ struct StoryView: View{
                                 .foregroundColor(Color.gray)
                                 .background(Color.clear)
                             Text(i)
+                                .lineLimit(2)
                                 .padding()
                         }
-                        .padding(5)
-                        .frame(width: 100, height: 100)
+                        .padding(4)
+                        .frame(width: 90, height: 90)
                     }
                 }
             }
@@ -106,6 +110,18 @@ struct StoryView: View{
     }
 }
 
+
+
+
+//navigationlinkから戻るボタン
+struct BackView: View{
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    var body: some View{
+        Button(action:{
+            self.presentationMode.wrappedValue.dismiss()
+        }){Text("戻る")}
+    }
+}
 
 
 

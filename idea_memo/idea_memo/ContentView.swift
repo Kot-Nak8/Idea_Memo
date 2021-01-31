@@ -13,6 +13,7 @@ struct ContentView: View {
             //ホーム
             NavigationView{
                 HomeView()
+                    .background(Color("bg"))
                     .navigationTitle("Home")
                     .navigationBarTitleDisplayMode(.inline)
             }
@@ -35,7 +36,8 @@ struct ContentView: View {
             }
             .tabItem {
                 Image(systemName: "lightbulb")
-                }
+                
+            }
         }
     }
 }
@@ -45,14 +47,16 @@ struct ContentView: View {
 
 //ホーム画面
 struct HomeView: View{
-    @State var wi = UIScreen.main.bounds.size.width //スクリーンの幅と高さ取得
-    @State var he = UIScreen.main.bounds.size.height
+    let wi = UIScreen.main.bounds.size.width //スクリーンの幅と高さ取得
+    let he = UIScreen.main.bounds.size.height
     var body: some View{
         ZStack{
-            VStack{
+            ScrollView{
+                VStack{
                 Text("") //Spacer()だと空きすぎてたからTextの空欄で調整してみた
                 StoryView()
                 IdeaView()
+                }
             }
             NavigationLink(destination:
                 VStack{
@@ -81,28 +85,56 @@ struct HomeView: View{
 
 //ストーリーみたいなやつ
 struct StoryView: View{
-    @State var testdata = ["犬","スマホ","広告","誕生日","自動車","Youtube"]
+    let wi = UIScreen.main.bounds.size.width //スクリーンの幅と高さ取得
+    let he = UIScreen.main.bounds.size.height
+    @State var new_i = 0
+    @State var testdata = ["犬","スマホ","広告","誕生日","自動車","Youtube","aaa","aaa"]
     var body: some View{
         ScrollView(.horizontal, showsIndicators: false){
             HStack{
-                ForEach(self.testdata, id: \.self) { i in
+                ForEach(self.testdata.indices, id: \.self) { i in
                     NavigationLink(destination:
-                        VStack{
-                            Text(i)
-                            BackView()
-                            }.navigationBarBackButtonHidden(true)
-                    ){
                         ZStack{
-                            Image(systemName: "circle")
-                                .resizable()
-                                .foregroundColor(Color.gray)
-                                .background(Color.clear)
-                            Text(i)
+                            Color.white.edgesIgnoringSafeArea(.all)
+                            VStack{
+                                Text(self.testdata[self.new_i])
+                                Text("アイデアのペアを表示")
+                            }
+                            HStack{ //画面の端をタッチすると次のコンテンツに移動する。編集中は機能しないようにする
+                                Button(action:{  //左をタップ
+                                    if self.new_i - 1 >= 0{
+                                        self.new_i = self.new_i - 1
+                                    }
+                                    print(new_i)
+                                }){
+                                    Text(" ")
+                                        .frame(width: wi/7, height: he)
+                                }
+                                Spacer()
+                                Button(action:{  //右をタップ
+                                    if self.testdata.count > self.new_i + 1{
+                                    self.new_i = self.new_i + 1
+                                    }
+                                    print(new_i)
+                                }){
+                                    Text(" ")
+                                        .frame(width: wi/7, height: he)
+                                }
+                            }
+                            BackView()
+                                .position(x: 8*wi/9, y: he/7)
+                        }.onAppear(perform:{
+                            self.new_i = i
+                            })
+                             .navigationBarBackButtonHidden(true)
+                        ){
+                            Text(self.testdata[i])
+                                .foregroundColor(.black)
                                 .lineLimit(2)
                                 .padding()
-                        }
-                        .padding(4)
-                        .frame(width: 90, height: 90)
+                                .frame(width: 80, height: 80)
+                                .background(CircleView())
+                                .padding(5)
                     }
                 }
             }
@@ -112,6 +144,27 @@ struct StoryView: View{
 
 
 
+//storyの円の図形を作るビュー
+struct CircleView: View {
+    //グラデーションの設定
+    let gradient = LinearGradient(gradient: Gradient(colors: [Color(red: 200/255, green: 255/255, blue: 255/255), .blue]), startPoint: .topLeading, endPoint: .bottomTrailing)
+
+    var body: some View {
+        //Geometなんちゃらはよくわからん、親ビューのサイズとかを取得できるみたい
+        GeometryReader { geometry in
+            ZStack{
+            Circle()
+                .fill(Color.white)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+            Circle()
+                .stroke(gradient, lineWidth: 5)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+            }
+        }
+    }
+}
+
+
 
 //navigationlinkから戻るボタン
 struct BackView: View{
@@ -119,7 +172,14 @@ struct BackView: View{
     var body: some View{
         Button(action:{
             self.presentationMode.wrappedValue.dismiss()
-        }){Text("戻る")}
+        }){
+            Image(systemName: "xmark")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20)
+                .opacity(0.4)
+                .foregroundColor(.gray)
+        }
     }
 }
 
@@ -127,38 +187,105 @@ struct BackView: View{
 
 //保存したアイデア一覧
 struct IdeaView: View{
-    @State var testdata = ["テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテスト",
-        "テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
-        "テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテてててててててt",
-        "テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテスト",
-            "テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
-            "テストテストテストテストテスト"
+    let wi = UIScreen.main.bounds.size.width //スクリーンの幅と高さ取得
+    let he = UIScreen.main.bounds.size.height
+    @State var testdata = ["1テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテスト",
+        "2テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
+        "3テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテてててててててt",
+        "4テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテスト",
+            "5テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
+            "6テストテストテストテストテスト",
+            "7テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
+            "8テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
+            "9テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテスト",
+                "10テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
+                "11テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテてててててててt",
+                "12テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテスト",
+                    "13テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
+                    "14テストテストテストテストテスト",
+                    "15テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
+                    "16テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
+                    
         ]
     
+    
     var body: some View{
-        List{
-            ForEach(self.testdata, id: \.self) { i in
-                NavigationLink(destination:
-                    VStack{
-                        Text("編集画面")
-                        Text(i)
-                            .padding()
+        LazyVGrid(columns: Array(repeating: .init(.fixed(wi/2-15)), count: 2)){
+            ForEach(self.testdata.indices) { i in
+                HStack{
+                    NavigationLink(destination:
+                        VStack{
+                            Text("編集画面")
+                            Text(self.testdata[i])
+                                .padding()
+                            Button(action:{
+                                print(self.testdata[i])
+                            }){Text("ii")}
+                            }
+                    ){
+                        Text(self.testdata[i])
+                            .padding(5)
+                            .frame(width: wi/2-20, height: 180)
+                            .background(StickyNoteView())
+                            .font(.footnote)
+                            .foregroundColor(.black)
+                            .lineLimit(6)
+                            .padding(EdgeInsets(
+                                top: 5,        // 上辺の余白幅
+                                leading: 5,    // 左辺の余白幅
+                                bottom: 0,     // 下辺の余白幅
+                                trailing: 0    // 右辺の余白幅
+                            ))
                         }
-                ){
-                    Text(i)
-                        .lineLimit(4)
-                        .padding(5)
                 }
             }
-        }.listStyle(PlainListStyle())
+        }
     }
 }
 
 
 
+//付箋の図形を作るビュー
+struct StickyNoteView: View {
+    //色はユーザーが変えられるようにしようかなと思う
+    var color =  Color(red: 200/255, green: 255/255, blue: 255/255)
+
+    var body: some View {
+        //Geometなんちゃらはよくわからん、親ビューのサイズとかを取得できるみたい
+        GeometryReader { geometry in
+            ZStack {
+                //Pathは図形を作るやつらしい
+                Path { path in
+                    let w = geometry.size.width
+                    let h = geometry.size.height
+                    let m = min(w/5, h/5)
+                    path.move(to: CGPoint(x: 0, y: 0))
+                    path.addLine(to: CGPoint(x: 0, y: h))
+                    path.addLine(to: CGPoint(x: w-m, y: h))
+                    path.addLine(to: CGPoint(x: w, y: h-m))
+                    path.addLine(to: CGPoint(x: w, y: 0))
+                    path.addLine(to: CGPoint(x: 0, y: 0))
+                }
+                .fill(self.color)
+                Path { path in
+                    let w = geometry.size.width
+                    let h = geometry.size.height
+                    let m = min(w/5, h/5)
+                    path.move(to: CGPoint(x: w-m, y: h))
+                    path.addLine(to: CGPoint(x: w-m, y: h-m))
+                    path.addLine(to: CGPoint(x: w, y: h-m))
+                    path.addLine(to: CGPoint(x: w-m, y: h))
+                }
+                .fill(Color.black).opacity(0.3)
+            }
+        }
+    }
+}
+
 
 
 //検索バーのビュー
+//検索結果のビューを内包
 struct SearchView: View{
     @State var search = ""
     @State var search_r = ""
@@ -210,7 +337,7 @@ struct SearchView: View{
                     }
                     .padding(.trailing, 10)
                     .transition(.move(edge: .trailing))
-                    //.animation(.default)
+                    .animation(.default)
                 }
             }
             Searchresults(search: $search_r) //検索結果のビュー
@@ -233,7 +360,8 @@ struct Searchresults: View{
                 }
             }
             
-        }.listStyle(PlainListStyle())
+        }
+        .listStyle(PlainListStyle())
     }
 }
 
@@ -248,7 +376,8 @@ struct TextEditView: View {
     var body: some View {
         ZStack{
         RoundedRectangle(cornerRadius: 20.0)
-            .strokeBorder().foregroundColor(.gray)
+            .strokeBorder()
+            .foregroundColor(.gray)
             .background(Color.clear)
         TextEditor(text: self.$text)
             .padding()

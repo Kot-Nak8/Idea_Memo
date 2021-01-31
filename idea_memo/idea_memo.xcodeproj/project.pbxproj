@@ -14,6 +14,7 @@
 		87E947AE25C2FFA9005A99BA /* idea_memoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E947AD25C2FFA9005A99BA /* idea_memoTests.swift */; };
 		87E947B925C2FFA9005A99BA /* idea_memoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E947B825C2FFA9005A99BA /* idea_memoUITests.swift */; };
 		87E947CA25C30AD3005A99BA /* realm_data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E947C925C30AD3005A99BA /* realm_data.swift */; };
+		87E947CF25C5C61D005A99BA /* test_data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E947CE25C5C61D005A99BA /* test_data.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		87E947B825C2FFA9005A99BA /* idea_memoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = idea_memoUITests.swift; sourceTree = "<group>"; };
 		87E947BA25C2FFA9005A99BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		87E947C925C30AD3005A99BA /* realm_data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = realm_data.swift; sourceTree = "<group>"; };
+		87E947CE25C5C61D005A99BA /* test_data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test_data.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +102,7 @@
 				87E9479B25C2FFA7005A99BA /* idea_memoApp.swift */,
 				87E9479D25C2FFA7005A99BA /* ContentView.swift */,
 				87E947C925C30AD3005A99BA /* realm_data.swift */,
+				87E947CE25C5C61D005A99BA /* test_data.swift */,
 				87E9479F25C2FFA9005A99BA /* Assets.xcassets */,
 				87E947A425C2FFA9005A99BA /* Info.plist */,
 				87E947A125C2FFA9005A99BA /* Preview Content */,
@@ -265,6 +268,7 @@
 				87E9479E25C2FFA7005A99BA /* ContentView.swift in Sources */,
 				87E947CA25C30AD3005A99BA /* realm_data.swift in Sources */,
 				87E9479C25C2FFA7005A99BA /* idea_memoApp.swift in Sources */,
+				87E947CF25C5C61D005A99BA /* test_data.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -30,11 +30,14 @@ struct SettingView: View {
     
     var body: some View {
         List{
-            husen()
-            story()
-            inbutton()
-            description()
-            
+            Section(header: Text("色の設定")) {
+                husen()
+                story()
+                inbutton()
+            }
+            Section(header: Text("規約等")) {
+                description()
+            }
         }
     }
 }

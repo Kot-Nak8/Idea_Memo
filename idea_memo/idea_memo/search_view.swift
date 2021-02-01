@@ -81,8 +81,14 @@ struct Searchresults: View{
     var body: some View{
         List{
             ForEach(self.testdata, id: \.self) { i in
-                if i.contains(self.search) { //ここで検索ワードを含むものだけ表示する
-                    Text(i)
+                if i.contains(self.search) {
+                    //ここで検索ワードを含むものだけ表示する
+                    NavigationLink(destination:
+                        Text(i)  //編集画面
+                    ){
+                        Text(i)
+                        
+                    }
                 }
             }
             

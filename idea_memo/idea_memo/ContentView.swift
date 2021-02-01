@@ -156,7 +156,7 @@ struct StoryView: View{
                                     print(new_i)
                                 }){
                                     Text(" ")
-                                        .frame(width: wi/7, height: he)
+                                        .frame(width: wi/9, height: he)
                                 }
                                 Spacer()
                                 Button(action:{  //右をタップ
@@ -166,7 +166,7 @@ struct StoryView: View{
                                     print(new_i)
                                 }){
                                     Text(" ")
-                                        .frame(width: wi/7, height: he)
+                                        .frame(width: wi/9, height: he)
                                 }
                             }
                             BackView() //バツボタン

@@ -33,6 +33,7 @@ struct SettingView: View {
             husen()
             story()
             inbutton()
+            description()
             
         }
     }
@@ -654,5 +655,15 @@ struct inbutton: View{
                 self.Bn = Setting().Bn_color
             })
         ){Text("入力ボタンの色")}
+    }
+}
+
+
+
+struct description: View{
+    var body: some View{
+        NavigationLink(destination:
+            Text("利用規約とかを書くところ")
+        ){Text("本アプリについて")}
     }
 }

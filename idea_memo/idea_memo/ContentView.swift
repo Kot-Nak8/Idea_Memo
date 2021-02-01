@@ -141,7 +141,7 @@ struct StoryView: View{
                                             Spacer()
                                             Button(action:{
                                                 //保存の処理
-                                            }){Text("保存")}
+                                            }){Text("保存").foregroundColor(Color.blue)}
                                             Spacer()
                                             }
                                         Spacer()

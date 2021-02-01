@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import RealmSwift
 
 struct ContentView: View {
+    @ObservedObject var setting = Setting()
     var body: some View {
         TabView{
             //ホーム
@@ -32,13 +34,43 @@ struct ContentView: View {
                 }
             //アイデアのペア表示
             NavigationView{
-                Text("アイデアのペア表示")
+                PairView()
+                    .navigationTitle("Idea Pair")
+                    .navigationBarTitleDisplayMode(.inline)
             }
             .tabItem {
                 Image(systemName: "lightbulb")
-                
             }
-        }
+            //設定
+            NavigationView{
+                SettingView()
+                    .navigationTitle("Settings")
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+            .tabItem {
+                Image(systemName: "gearshape")
+            }
+        }.onAppear(perform: { //初回起動時に付箋の色とかを以下に設定
+            if !(self.setting.f_on) {
+                self.setting.R_color = 200
+                self.setting.G_color = 220
+                self.setting.B_color = 250
+                self.setting.Rs_color = 165
+                self.setting.Gs_color = 175
+                self.setting.Bs_color = 225
+                self.setting.Rss_color = 55
+                self.setting.Gss_color = 30
+                self.setting.Bss_color = 90
+                self.setting.Ri_color = 255
+                self.setting.Gi_color = 255
+                self.setting.Bi_color = 255
+                self.setting.Rn_color = 15
+                self.setting.Gn_color = 110
+                self.setting.Bn_color = 255
+                self.setting.f_on = true
+                print("aa")
+            }
+        })
     }
 }
 
@@ -58,24 +90,7 @@ struct HomeView: View{
                 IdeaView()
                 }
             }
-            NavigationLink(destination:
-                VStack{
-                    Spacer()
-                    TextEditView()
-                    Spacer()
-                    Button(action:{
-                        
-                    }){
-                        Text("入力完了")
-                        }
-                    Spacer()
-                    }
-                ){
-                    Image(systemName: "pencil.circle.fill")
-                       .resizable()
-                       .scaledToFit()
-                       .frame(width: 60, height: 60)
-                    }.position(x: 6*wi/7, y: 5*he/7)
+            InputView().position(x: 6*wi/7, y: 5*he/7)
         }
     }
 }
@@ -85,22 +100,47 @@ struct HomeView: View{
 
 //ストーリーみたいなやつ
 struct StoryView: View{
+    @State var Rs = Setting().Rs_color
+    @State var Gs = Setting().Gs_color
+    @State var Bs = Setting().Bs_color
+    @State var Rss = Setting().Rss_color
+    @State var Gss = Setting().Gss_color
+    @State var Bss = Setting().Bss_color
+    @State var Ri = Setting().Ri_color
+    @State var Gi = Setting().Gi_color
+    @State var Bi = Setting().Bi_color
+    @State var Rw = Setting().Rw_color
+    @State var Gw = Setting().Gw_color
+    @State var Bw = Setting().Bw_color
     let wi = UIScreen.main.bounds.size.width //スクリーンの幅と高さ取得
     let he = UIScreen.main.bounds.size.height
     @State var new_i = 0
+    @State var text = "新しいアイデアを記入"
     @State var testdata = ["犬","スマホ","広告","誕生日","自動車","Youtube","aaa","aaa"]
     var body: some View{
         ScrollView(.horizontal, showsIndicators: false){
             HStack{
                 ForEach(self.testdata.indices, id: \.self) { i in
                     NavigationLink(destination:
-                        ZStack{
-                            Color.white.edgesIgnoringSafeArea(.all)
-                            VStack{
-                                Text(self.testdata[self.new_i])
-                                Text("アイデアのペアを表示")
-                            }
-                            HStack{ //画面の端をタッチすると次のコンテンツに移動する。編集中は機能しないようにする
+                            ZStack{
+                                    List{
+                                        TextPairView(text: $testdata[self.new_i])
+                                        HStack{
+                                            Spacer()
+                                            Text("＋")
+                                            Spacer()
+                                        }
+                                        TextPairView(text: $testdata[self.new_i])
+                                        HStack{
+                                            Spacer()
+                                            Text("||")
+                                            Spacer()
+                                        }
+                                        TextPairView(text: $text)
+                                        }
+                                        .navigationTitle("New Idea")
+                                        .navigationBarTitleDisplayMode(.inline)
+                            HStack{ //画面の端をタッチすると次のコンテンツに移動する。編集中は機能しないようにしたい
                                 Button(action:{  //左をタップ
                                     if self.new_i - 1 >= 0{
                                         self.new_i = self.new_i - 1
@@ -121,21 +161,26 @@ struct StoryView: View{
                                         .frame(width: wi/7, height: he)
                                 }
                             }
-                            BackView()
+                            BackView() //バツボタン
                                 .position(x: 8*wi/9, y: he/7)
                         }.onAppear(perform:{
                             self.new_i = i
                             })
                              .navigationBarBackButtonHidden(true)
                         ){
-                            Text(self.testdata[i])
-                                .foregroundColor(.black)
+                            Text(self.testdata[i]) //ストーリの丸表示
+                                .foregroundColor(Color(red: self.Rw/255, green: self.Gw/255, blue: self.Bw/255))
                                 .lineLimit(2)
                                 .padding()
                                 .frame(width: 80, height: 80)
-                                .background(CircleView())
+                                .background(CircleView(Rs: $Rs, Gs: $Gs, Bs: $Bs, Rss: $Rss, Gss: $Gss, Bss: $Bss, Ri: $Ri, Gi: $Gi, Bi: $Bi))
                                 .padding(5)
-                    }
+                    }.onAppear(perform: {
+                        self.Rw = Setting().Rw_color
+                        self.Gw = Setting().Gw_color
+                        self.Bw = Setting().Bw_color
+                        self.text = "新しいアイデアを記入"
+                    })
                 }
             }
         }
@@ -144,29 +189,7 @@ struct StoryView: View{
 
 
 
-//storyの円の図形を作るビュー
-struct CircleView: View {
-    //グラデーションの設定
-    let gradient = LinearGradient(gradient: Gradient(colors: [Color(red: 200/255, green: 255/255, blue: 255/255), .blue]), startPoint: .topLeading, endPoint: .bottomTrailing)
-
-    var body: some View {
-        //Geometなんちゃらはよくわからん、親ビューのサイズとかを取得できるみたい
-        GeometryReader { geometry in
-            ZStack{
-            Circle()
-                .fill(Color.white)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-            Circle()
-                .stroke(gradient, lineWidth: 5)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-            }
-        }
-    }
-}
-
-
-
-//navigationlinkから戻るボタン
+//navigationlinkから戻るボタン(ストーリ用)
 struct BackView: View{
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     var body: some View{
@@ -177,9 +200,54 @@ struct BackView: View{
                 .resizable()
                 .scaledToFit()
                 .frame(width: 20)
-                .opacity(0.4)
+                .opacity(0.7)
                 .foregroundColor(.gray)
         }
+    }
+}
+
+
+
+//入力ボタンのビュー
+struct InputView: View{
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @State var Rn = Setting().Rn_color
+    @State var Gn = Setting().Gn_color
+    @State var Bn = Setting().Bn_color
+    @State var flag = true
+    @State var text = "アイデアを記入"
+    var body: some View{
+        NavigationLink(destination: //入力画面
+            VStack{
+                Spacer()
+                TextEditView(text: $text)
+                Toggle(isOn: $flag) {
+                    Text("ペア表示の有無")
+                }.padding(EdgeInsets(
+                    top: 5,        // 上辺の余白幅
+                    leading: 30,    // 左辺の余白幅
+                    bottom: 10,     // 下辺の余白幅
+                    trailing: 30    // 右辺の余白幅
+                ))
+                Button(action:{
+                    //ここに入力したのを保存する処理を入れる
+                }){
+                    Text("入力完了")
+                    }
+                Spacer()
+                }
+            ){
+                Image(systemName: "pencil.circle.fill")
+                   .resizable()
+                   .scaledToFit()
+                   .frame(width: 60, height: 60)
+                   .foregroundColor(Color(red: self.Rn/255, green: self.Gn/255, blue: self.Bn/255))
+                }.onAppear(perform: {
+                    self.Rn = Setting().Rn_color
+                    self.Gn = Setting().Gn_color
+                    self.Bn = Setting().Bn_color
+                    self.text = "アイデアを記入"
+                })
     }
 }
 
@@ -189,6 +257,13 @@ struct BackView: View{
 struct IdeaView: View{
     let wi = UIScreen.main.bounds.size.width //スクリーンの幅と高さ取得
     let he = UIScreen.main.bounds.size.height
+    @State var R = Setting().R_color
+    @State var G = Setting().G_color
+    @State var B = Setting().B_color
+    @State var Rf = Setting().Rf_color
+    @State var Gf = Setting().Gf_color
+    @State var Bf = Setting().Bf_color
+    @State var flag = true
     @State var testdata = ["1テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテスト",
         "2テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
         "3テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテてててててててt",
@@ -198,16 +273,8 @@ struct IdeaView: View{
             "7テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
             "8テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
             "9テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテスト",
-                "10テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
-                "11テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテてててててててt",
-                "12テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテスト",
-                    "13テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
-                    "14テストテストテストテストテスト",
-                    "15テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
-                    "16テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ",
-                    
+                "10テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテ"
         ]
-    
     
     var body: some View{
         LazyVGrid(columns: Array(repeating: .init(.fixed(wi/2-15)), count: 2)){
@@ -215,164 +282,52 @@ struct IdeaView: View{
                 HStack{
                     NavigationLink(destination:
                         VStack{
-                            Text("編集画面")
-                            Text(self.testdata[i])
-                                .padding()
+                            TextEditView(text: $testdata[i])
+                            Toggle(isOn: $flag) {
+                                Text("ペア表示の有無")
+                            }.padding(EdgeInsets(
+                                top: 5,        // 上辺の余白幅
+                                leading: 30,    // 左辺の余白幅
+                                bottom: 10,     // 下辺の余白幅
+                                trailing: 30    // 右辺の余白幅
+                            ))
                             Button(action:{
-                                print(self.testdata[i])
-                            }){Text("ii")}
+                                //編集したのを更新する処理
+                            }){Text("更新")}
                             }
                     ){
-                        Text(self.testdata[i])
-                            .padding(5)
-                            .frame(width: wi/2-20, height: 180)
-                            .background(StickyNoteView())
-                            .font(.footnote)
-                            .foregroundColor(.black)
-                            .lineLimit(6)
-                            .padding(EdgeInsets(
-                                top: 5,        // 上辺の余白幅
-                                leading: 5,    // 左辺の余白幅
-                                bottom: 0,     // 下辺の余白幅
-                                trailing: 0    // 右辺の余白幅
-                            ))
-                        }
+                            Text(self.testdata[i])
+                                .padding(5)
+                                .frame(width: wi/2-20, height: 180)
+                                .background(StickyNoteView(R: $R, G: $G, B: $B))
+                                .font(.footnote)
+                                .foregroundColor(Color(red: self.Rf/255, green: self.Gf/255, blue: self.Bf/255))
+                                .lineLimit(6)
+                                .padding(EdgeInsets(
+                                    top: 5,        // 上辺の余白幅
+                                    leading: 5,    // 左辺の余白幅
+                                    bottom: 0,     // 下辺の余白幅
+                                    trailing: 0    // 右辺の余白幅
+                                ))
+                        }.onAppear(perform: {
+                            self.Rf = Setting().Rf_color
+                            self.Gf = Setting().Gf_color
+                            self.Bf = Setting().Bf_color
+                        })
                 }
             }
         }
-    }
-}
-
-
-
-//付箋の図形を作るビュー
-struct StickyNoteView: View {
-    //色はユーザーが変えられるようにしようかなと思う
-    var color =  Color(red: 200/255, green: 255/255, blue: 255/255)
-
-    var body: some View {
-        //Geometなんちゃらはよくわからん、親ビューのサイズとかを取得できるみたい
-        GeometryReader { geometry in
-            ZStack {
-                //Pathは図形を作るやつらしい
-                Path { path in
-                    let w = geometry.size.width
-                    let h = geometry.size.height
-                    let m = min(w/5, h/5)
-                    path.move(to: CGPoint(x: 0, y: 0))
-                    path.addLine(to: CGPoint(x: 0, y: h))
-                    path.addLine(to: CGPoint(x: w-m, y: h))
-                    path.addLine(to: CGPoint(x: w, y: h-m))
-                    path.addLine(to: CGPoint(x: w, y: 0))
-                    path.addLine(to: CGPoint(x: 0, y: 0))
-                }
-                .fill(self.color)
-                Path { path in
-                    let w = geometry.size.width
-                    let h = geometry.size.height
-                    let m = min(w/5, h/5)
-                    path.move(to: CGPoint(x: w-m, y: h))
-                    path.addLine(to: CGPoint(x: w-m, y: h-m))
-                    path.addLine(to: CGPoint(x: w, y: h-m))
-                    path.addLine(to: CGPoint(x: w-m, y: h))
-                }
-                .fill(Color.black).opacity(0.3)
-            }
-        }
-    }
-}
-
-
-
-//検索バーのビュー
-//検索結果のビューを内包
-struct SearchView: View{
-    @State var search = ""
-    @State var search_r = ""
-    @State var isEditing = false
-    var body: some View{
-        VStack{
-            HStack{
-                TextField("Search", text: $search,
-                          onCommit: {
-                            self.search_r = self.search //エンター押した時に代入
-                          })
-                    .padding(7)
-                    .padding(.horizontal, 25)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
-                    .overlay(
-                        HStack {
-                            Image(systemName: "magnifyingglass")
-                                .foregroundColor(.gray)
-                                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                                .padding(.leading, 8)
-                            //バツボタン
-                            if isEditing {
-                                Button(action: {
-                                    self.search = ""
-                                    self.search_r = ""
-                                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                                }) {
-                                    Image(systemName: "multiply.circle.fill")
-                                        .foregroundColor(.gray)
-                                        .padding(.trailing, 8)
-                                }
-                            }
-                        }
-                    )
-                    .padding(.horizontal, 10)
-                    .onTapGesture {
-                        self.isEditing = true
-                    }
-                //キャンセルボタン
-                if isEditing {
-                    Button(action: {
-                        self.isEditing = false
-                        self.search = ""
-                        self.search_r = ""
-     
-                    }) {
-                        Text("Cancel")
-                    }
-                    .padding(.trailing, 10)
-                    .transition(.move(edge: .trailing))
-                    .animation(.default)
-                }
-            }
-            Searchresults(search: $search_r) //検索結果のビュー
-        }
-    }
-}
-
-
-
-
-//検索結果のビュー
-struct Searchresults: View{
-    @State var testdata = ["私の名前は中村", "私の名前は田久保", "研究めんどくさい", "研究つらい", "アプリ作るの楽しい", "研究楽しい" ,"彼女いない"]
-    @Binding var search: String
-    var body: some View{
-        List{
-            ForEach(self.testdata, id: \.self) { i in
-                if i.contains(self.search) {
-                    Text(i)
-                }
-            }
-            
-        }
-        .listStyle(PlainListStyle())
     }
 }
 
 
 
 //TextEditorにはスタイルやプレースホルダーなどがまだ備わっていないため、自分で作るしかないらしい
-//入力フィールド
+//入力フィールド。入力するときと編集する時のテキストフィールド
 struct TextEditView: View {
     @State var wi = UIScreen.main.bounds.size.width
     @State var he = UIScreen.main.bounds.size.height
-    @State var text = "アイデアを記入"
+    @Binding var text: String
     var body: some View {
         ZStack{
         RoundedRectangle(cornerRadius: 20.0)
@@ -387,9 +342,10 @@ struct TextEditView: View {
                 }
             })
         }
-        .frame(width: 4*wi/5, height: he/2, alignment: .center)
+        .frame(width: 6*wi/7, height: 3*he/5, alignment: .center)
     }
 }
+
 
 
 

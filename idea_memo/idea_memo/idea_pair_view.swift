@@ -45,6 +45,14 @@ struct PairView: View{
                                     Spacer()
                                 }
                                 TextPairView(text: $text)
+                                HStack{
+                                    Spacer()
+                                    Button(action:{
+                                        //保存の処理
+                                    }){Text("保存")}
+                                    Spacer()
+                                    }
+                                Spacer()
                                 }
                                 .navigationTitle("New Idea")
                                 .navigationBarTitleDisplayMode(.inline)
